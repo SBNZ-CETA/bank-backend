@@ -1,0 +1,7 @@
+package sbnz.bank.rules;
+dialect  "mvel"
+
+rule "example"
+    when
+    then
+end
