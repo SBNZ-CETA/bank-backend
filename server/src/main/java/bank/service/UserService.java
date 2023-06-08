@@ -1,5 +1,7 @@
 package bank.service;
 
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -51,5 +53,11 @@ public class UserService implements UserDetailsService{
     public User getByUsername(String username) {
         return userRepository.findUserByUsername(username).orElse(null);
     }
-
+    public User getLoggedId() {
+        try {
+            return (User)SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        } catch(ClassCastException err) {
+            return null ;
+        }
+    }
 }
