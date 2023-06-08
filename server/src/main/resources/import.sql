@@ -1,0 +1,15 @@
+insert into loans_table (minimumPaymentDeadline,maximumPaymentDeadline,loanAmount) values (2,6, 7000);
+insert into loans_table (minimumPaymentDeadline,maximumPaymentDeadline,loanAmount) values (3,4, 5000);
+insert into loans_table (minimumPaymentDeadline,maximumPaymentDeadline,loanAmount) values (5,7, 32000);
+insert into loans_table (minimumPaymentDeadline,maximumPaymentDeadline,loanAmount) values (8,12, 20000);
+insert into loans_table (minimumPaymentDeadline,maximumPaymentDeadline,loanAmount) values (1,4, 2000);
+insert into loans_table (minimumPaymentDeadline,maximumPaymentDeadline,loanAmount) values (9,16, 110000);
+insert into loans_table (minimumPaymentDeadline,maximumPaymentDeadline,loanAmount) values (2,5, 2000);
+insert into loans_table (minimumPaymentDeadline,maximumPaymentDeadline,loanAmount) values (3,6, 11000);
+insert into loans_table (minimumPaymentDeadline,maximumPaymentDeadline,loanAmount) values (12,24, 500000);
+insert into loans_table (minimumPaymentDeadline,maximumPaymentDeadline,loanAmount) values (1,12, 14000);
+insert into loans_table (minimumPaymentDeadline,maximumPaymentDeadline,loanAmount) values (8,8, 10800);
+insert into loans_table (minimumPaymentDeadline,maximumPaymentDeadline,loanAmount) values (4,10, 35000);
+insert into loans_table (minimumPaymentDeadline,maximumPaymentDeadline,loanAmount) values (4,7, 1000);
+insert into loans_table (minimumPaymentDeadline,maximumPaymentDeadline,loanAmount) values (6,6, 20000);
+insert into loans_table (minimumPaymentDeadline,maximumPaymentDeadline,loanAmount) values (7,14, 10000);
