@@ -17,9 +17,6 @@ public class UserController {
 
     @PostMapping(path="/register")
     public boolean register(@RequestBody RegisterDto request){
-        System.out.println(request.getName());
-        System.out.println(request.getSurname());
-        System.out.println(request.getEmail());
         return userService.register(request);
     }
 
