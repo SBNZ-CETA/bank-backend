@@ -1,0 +1,12 @@
+package sbnz.bank.rules;
+
+query findFittingLoan()
+//TODO: Insert additional queries and conditions here
+end
+
+rule "Find a fitting loan for a user"
+    when
+       //TODO: call findFittingLoan here
+    then
+        System.out.println("Found");
+end
