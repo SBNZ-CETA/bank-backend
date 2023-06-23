@@ -36,16 +36,18 @@ public class User implements UserDetails{
     private String email;
     private String username;
     private String password;
+    private Long age;
     @Enumerated(EnumType.STRING)
     private UserType type;
 
-    public User(String name, String surname, String email, String username, String password, UserType type) {
+    public User(String name, String surname, String email, String username, String password, UserType type, Long age) {
         this.name = name;
         this.surname = surname;
         this.email = email;
         this.username = username;
         this.password = password;
         this.type = type;
+        this.age = age;
     }
 
     @Override

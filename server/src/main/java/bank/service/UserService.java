@@ -39,7 +39,7 @@ public class UserService implements UserDetailsService{
     private User makeUserFromRequest(RegisterDto request) {
         String encodedPassword = bCryptPasswordEncoder.encode(request.getPassword());
         return new User(request.getName(),request.getSurname(),request.getEmail(),request.getUsername(),
-                encodedPassword, UserType.CLIENT);
+                encodedPassword, UserType.CLIENT, request.getAge());
     }
 
     private void checkUserValidity(String username, String email) {

@@ -33,6 +33,8 @@ public class LoanService {
       List<Loan> loansAvailable = new ArrayList<>();
       result.forEach(loan -> loansAvailable.add(loanRepository.findById((Long)loan.get("$id")).get()));
 
+      System.out.println(loansAvailable.size());
+
       kieSession.dispose();
       return loansAvailable;
    }

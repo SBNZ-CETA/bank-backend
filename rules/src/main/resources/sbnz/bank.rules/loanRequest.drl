@@ -5,7 +5,8 @@ import dtos.LoanRequestDto
 
 query findFittingLoan(Long $id)
      $loan: Loan($id;) and
-     LoanRequestDto($loan.getMinimumPaymentDeadline() <= rates, $loan.getMaximumPaymentDeadline() >= rates)
+     LoanRequestDto($loan.getMinimumPaymentDeadline() <= rates, $loan.getMaximumPaymentDeadline() >= rates) and
+     (User(age > 70, $loan.getMaximumPaymentDeadline() < 12) or User(age <= 70))
 end
 
 rule "Find fitting loan"
