@@ -1,12 +1,16 @@
 package sbnz.bank.rules;
+import facts.Loan
+import facts.User
+import dtos.LoanRequestDto
 
-query findFittingLoan()
-//TODO: Insert additional queries and conditions here
+query findFittingLoan(Long $id)
+     $loan: Loan($id;) and
+     LoanRequestDto($loan.getMinimumPaymentDeadline() <= rates, $loan.getMaximumPaymentDeadline() >= rates)
 end
 
-rule "Find a fitting loan for a user"
+rule "Find fitting loan"
     when
-       //TODO: call findFittingLoan here
+        findFittingLoan($id;)
     then
-        System.out.println("Found");
+     System.out.println("Found");
 end
