@@ -8,5 +8,6 @@ public class RegisterDto {
     private final String surname;
     private final String username;
     private final String password;
-    private final String email;    
+    private final String email;
+    private final Long age;
 }

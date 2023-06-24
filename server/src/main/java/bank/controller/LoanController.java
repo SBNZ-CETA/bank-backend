@@ -12,6 +12,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.List;
+
 @RestController
 @RequestMapping(path="/loans")
 @AllArgsConstructor
@@ -20,7 +22,7 @@ public class LoanController {
     private UserService userService;
 
     @PostMapping(produces = "application/json")
-    public ResponseEntity<Loan> requestLoan(@RequestBody LoanRequestDto request){
+    public ResponseEntity<List<Loan>> requestLoan(@RequestBody LoanRequestDto request){
         return new ResponseEntity<>(loanService.processLoanRequest(request, userService.getLoggedId()), HttpStatus.OK);
     }
 }
