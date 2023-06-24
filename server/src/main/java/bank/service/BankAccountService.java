@@ -9,12 +9,21 @@ import org.springframework.stereotype.Service;
 
 import java.util.Calendar;
 import java.util.Date;
+import java.util.List;
 import java.util.Random;
 
 @Service
 @AllArgsConstructor
 public class BankAccountService {
    private BankAccountRepository accountRepository;
+
+   public List<BankAccount> getAll() {
+      return accountRepository.findAll();
+   }
+
+   public BankAccount getById(Long id) {
+      return accountRepository.findById(id).get();
+   }
 
    public BankAccount create(NewBankAccountDto accountDto, User user) {
       return accountRepository.save(generateNewAccount(user, accountDto.getBalance()));
@@ -28,5 +37,9 @@ public class BankAccountService {
       Integer ccv = (new Random()).nextInt(1000);
 
       return new BankAccount(user, ccv, expirationDate, balance);
+   }
+
+   public BankAccount updateAccount(BankAccount bankAccount) {
+      return accountRepository.save(bankAccount);
    }
 }
