@@ -6,14 +6,15 @@ import java.util.ArrayList;
 import facts.UserTransactions;
 dialect  "mvel"
 
-//rule "Suspisious if it is second within hour and last one was 500km away"
-//    agenda-group "location"
-//    when
-//
-//    then
-//		System.out.println("Prebrza nedostizna");
-//		modify($t){ setSuspicious(true); }
-//end
+rule "Suspisious if it is second within hour and last one was 500km away"
+    agenda-group "location"
+    when
+        $utz: UserTransactions(transactionList.size >= 1, transactionList.get($utz.transactionList.size() - 1).latitude !=null)
+        $t: Transaction(calculateDistance(latitude, longitude, $utz.transactionList.get($utz.transactionList.size() - 1).latitude, $utz.transactionList.get($utz.transactionList.size() - 1).longitude) > 500 ,transactionTime.minusHours(1).isBefore($utz.transactionList.get($utz.transactionList.size() - 1).transactionTime))
+    then
+		System.out.println("Prebrza nedostizna");
+		modify($t){ setSuspicious(true); }
+end
 
 rule "Suspisious if it is 7th within 3 hours"
     agenda-group "locationIndependent"
@@ -25,18 +26,22 @@ rule "Suspisious if it is 7th within 3 hours"
     		modify($t){ setSuspicious(true); }
 end
 
-//rule "Suspisious if it is new location"
-//    agenda-group "location"
-//    when
-//    then
-//		System.out.println("Nova lokacija");
-//		modify($t){ setSuspicious(true); }
-//end
+rule "Suspisious if it is new location"
+    agenda-group "location"
+    when
+        $t: Transaction()
+        $utz: UserTransactions()
+        $s: Transaction(location != null) from $utz.transactionList
+            not Transaction($s.location.equals($t.location)) from $utz.transactionList
+    then
+		System.out.println("Nova lokacija");
+		modify($t){ setSuspicious(true); }
+end
 
 rule "Suspisious if it is done during night, expection is friday"
     agenda-group "locationIndependent"
     when
-        $t : Transaction(transactionTime.getHour() < 9,
+        $t: Transaction(transactionTime.getHour() < 9,
                             transactionTime.getDayOfWeek() != DayOfWeek.SATURDAY)
     then
 		System.out.println("Nocna");

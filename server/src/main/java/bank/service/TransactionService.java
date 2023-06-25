@@ -2,6 +2,7 @@ package bank.service;
 
 import bank.repository.TransactionRepository;
 import facts.BankAccount;
+import facts.GeolocationResponse;
 import facts.Transaction;
 import facts.UserTransactions;
 import lombok.AllArgsConstructor;
@@ -20,6 +21,8 @@ public class TransactionService {
     private TransactionRepository transactionRepository;
     private BankAccountService bankAccountService;
     private KieContainer kieContainer;
+
+    private GeoLocationService geoLocationService;
 
     public List<Transaction> getAll() {
         return transactionRepository.findAll();
@@ -54,8 +57,16 @@ public class TransactionService {
         kieSession.insert(transaction);
         kieSession.getAgenda().getAgendaGroup("locationIndependent").setFocus();
         kieSession.fireAllRules();
-        kieSession.getAgenda().getAgendaGroup("locationIndependent").setFocus();
-        kieSession.fireAllRules();
+        GeolocationResponse response = geoLocationService.getGeolocation(transaction.getLocation());
+        if (response != null) {
+            System.out.println("Latitude: " + response.getLatitude() + ", Longitude: " + response.getLongitude());
+            transaction.setLatitude(response.getLatitude());
+            transaction.setLongitude(response.getLongitude());
+            kieSession.getAgenda().getAgendaGroup("location").setFocus();
+            kieSession.fireAllRules();
+        } else {
+            System.out.println("Unable to retrieve geolocation.");
+        }
 
         kieSession.dispose();
         return transaction.isSuspicious();
