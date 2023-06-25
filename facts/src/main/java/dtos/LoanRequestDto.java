@@ -1,15 +1,10 @@
 package dtos;
 
+import facts.WorkStatus;
 import lombok.Data;
 
 @Data
 public class LoanRequestDto {
-    private enum WorkStatus {
-        UNEMPLOYED,
-        EMPLOYED,
-        EMPLOYEDLIMITED
-    }
-
     private Double requestedAmount;
     private Integer rates;
     private WorkStatus workStatus;
