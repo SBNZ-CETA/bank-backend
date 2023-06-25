@@ -28,12 +28,15 @@ public class BankAccount {
     private Date expirationDate;
     @Column
     private Double balance;
+    @Column
+    private Double expectedIncome;
 
-    public BankAccount(User user, Integer ccv, Date expirationDate, Double balance) {
+    public BankAccount(User user, Integer ccv, Date expirationDate, Double balance, Double income) {
         this.user = user;
         this.ccv = ccv;
         this.expirationDate = expirationDate;
         this.balance = balance;
+        this.expectedIncome = income;
     }
 
 }

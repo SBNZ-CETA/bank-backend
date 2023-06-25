@@ -26,17 +26,23 @@ public class BankAccountService {
    }
 
    public BankAccount create(NewBankAccountDto accountDto, User user) {
-      return accountRepository.save(generateNewAccount(user, accountDto.getBalance()));
+      return accountRepository.save(generateNewAccount(user, accountDto));
    }
 
-   private BankAccount generateNewAccount(User user, Double balance) {
+   private BankAccount generateNewAccount(User user, NewBankAccountDto newAccount) {
       Calendar cal = Calendar.getInstance();
       cal.add(Calendar.YEAR, 2);
       Date expirationDate = cal.getTime();
 
       Integer ccv = (new Random()).nextInt(1000);
 
-      return new BankAccount(user, ccv, expirationDate, balance);
+      return new BankAccount(
+              user,
+              ccv,
+              expirationDate,
+              newAccount.getBalance(),
+              newAccount.getIncome()
+      );
    }
 
    public BankAccount updateAccount(BankAccount bankAccount) {
