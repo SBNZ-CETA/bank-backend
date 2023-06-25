@@ -1,0 +1,56 @@
+package sbnz.bank.rules;
+import facts.Transaction;
+import java.time.DayOfWeek;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import facts.UserTransactions;
+dialect  "mvel"
+
+//rule "Suspisious if it is second within hour and last one was 500km away"
+//    agenda-group "location"
+//    when
+//
+//    then
+//		System.out.println("Prebrza nedostizna");
+//		modify($t){ setSuspicious(true); }
+//end
+
+rule "Suspisious if it is 7th within 3 hours"
+    agenda-group "locationIndependent"
+    when
+            $utz: UserTransactions(transactionList.size >= 7)
+            $t: Transaction(transactionTime.minusHours(3).isBefore($utz.transactionList.get($utz.transactionList.size() - 7).transactionTime))
+        then
+    		System.out.println("Spam");
+    		modify($t){ setSuspicious(true); }
+end
+
+//rule "Suspisious if it is new location"
+//    agenda-group "location"
+//    when
+//    then
+//		System.out.println("Nova lokacija");
+//		modify($t){ setSuspicious(true); }
+//end
+
+rule "Suspisious if it is done during night, expection is friday"
+    agenda-group "locationIndependent"
+    when
+        $t : Transaction(transactionTime.getHour() < 9,
+                            transactionTime.getDayOfWeek() != DayOfWeek.SATURDAY)
+    then
+		System.out.println("Nocna");
+		modify($t){ setSuspicious(true); }
+end
+
+rule "Suspisious if it is unusually large transaction, 2 times greater than biggest"
+    agenda-group "locationIndependent"
+    when
+        $utz: UserTransactions()
+        $max: Transaction() from $utz.transactionList
+        not Transaction(amount > $max.amount) from $utz.transactionList
+        $t: Transaction(amount > 2*$max.amount)
+    then
+		System.out.println("Neobicno velika");
+		modify($t){ setSuspicious(true); }
+end

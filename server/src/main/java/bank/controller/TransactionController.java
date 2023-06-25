@@ -3,7 +3,6 @@ package bank.controller;
 import bank.service.BankAccountService;
 import bank.service.TransactionService;
 import dtos.TransactionDto;
-import facts.BankAccount;
 import facts.Transaction;
 import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
