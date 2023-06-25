@@ -1,5 +1,6 @@
 package bank.service;
 
+import bank.repository.BankAccountRepository;
 import bank.repository.LoanRepository;
 import dtos.LoanRequestDto;
 import facts.Loan;
@@ -18,6 +19,7 @@ import java.util.List;
 @AllArgsConstructor
 public class LoanService {
    private LoanRepository loanRepository;
+   private BankAccountRepository bankAccountRepository;
    private KieContainer kieContainer;
 
    public List<Loan> processLoanRequest(LoanRequestDto request, User user)  {
@@ -26,7 +28,7 @@ public class LoanService {
       loanRepository.findAll().forEach(kieSession::insert);
       kieSession.insert(user);
       kieSession.insert(request);
-      //kieSession.fireAllRules();
+      kieSession.insert(bankAccountRepository.getByUserId(user.getId()).get());
 
       QueryResults result = kieSession.getQueryResults("findFittingLoan", new Object[]{Variable.v});
 
