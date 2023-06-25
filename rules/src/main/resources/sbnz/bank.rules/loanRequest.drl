@@ -1,12 +1,14 @@
 package sbnz.bank.rules;
 import facts.Loan
 import facts.User
-import dtos.LoanRequestDto
+import facts.LoanRequest
+import facts.BankAccount
 
 query findFittingLoan(Long $id)
      $loan: Loan($id;) and
-     LoanRequestDto($loan.getMinimumPaymentDeadline() <= rates, $loan.getMaximumPaymentDeadline() >= rates) and
-     (User(age > 70, $loan.getMaximumPaymentDeadline() < 12) or User(age <= 70))
+     $request: LoanRequest($loan.getMinimumPaymentDeadline() <= rates, $loan.getMaximumPaymentDeadline() >= rates) and
+     (User(age > 70, $loan.getMaximumPaymentDeadline() < 12) or User(age <= 70)) and
+     BankAccount(expectedIncome >= $loan.getLoanAmount() / $request.getRates())
 end
 
 rule "Find fitting loan"

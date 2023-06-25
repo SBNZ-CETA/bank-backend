@@ -4,13 +4,11 @@ import bank.service.LoanService;
 import bank.service.UserService;
 import dtos.LoanRequestDto;
 import facts.Loan;
+import facts.LoanRequest;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -22,7 +20,16 @@ public class LoanController {
     private UserService userService;
 
     @PostMapping(produces = "application/json")
-    public ResponseEntity<List<Loan>> requestLoan(@RequestBody LoanRequestDto request){
-        return new ResponseEntity<>(loanService.processLoanRequest(request, userService.getLoggedId()), HttpStatus.OK);
+    public ResponseEntity<LoanRequest> requestLoan(@RequestBody LoanRequestDto request){
+        return new ResponseEntity<>(loanService.createLoanRequest(request, userService.getLoggedId()), HttpStatus.OK);
+    }
+
+    @GetMapping(produces = "application/json", path = "/requests/{id}")
+    public ResponseEntity<List<Loan>> getReccommendation(@PathVariable Long id){
+        return new ResponseEntity<>(loanService.processLoanRequest(id), HttpStatus.OK);
+    }
+    @GetMapping(produces = "application/json", path = "/requests")
+    public ResponseEntity<List<LoanRequest>> getAllRequests(){
+        return new ResponseEntity<>(loanService.getAll(), HttpStatus.OK);
     }
 }

@@ -1,8 +1,11 @@
 package bank.service;
 
+import bank.repository.BankAccountRepository;
 import bank.repository.LoanRepository;
+import bank.repository.LoanRequestRepository;
 import dtos.LoanRequestDto;
 import facts.Loan;
+import facts.LoanRequest;
 import facts.User;
 import lombok.AllArgsConstructor;
 import org.kie.api.runtime.KieContainer;
@@ -18,15 +21,19 @@ import java.util.List;
 @AllArgsConstructor
 public class LoanService {
    private LoanRepository loanRepository;
+   private BankAccountRepository bankAccountRepository;
+   private LoanRequestRepository loanRequestRepository;
    private KieContainer kieContainer;
 
-   public List<Loan> processLoanRequest(LoanRequestDto request, User user)  {
+   public List<Loan> processLoanRequest(Long requestId)  {
       KieSession kieSession = kieContainer.newKieSession();
 
       loanRepository.findAll().forEach(kieSession::insert);
-      kieSession.insert(user);
+      LoanRequest request = loanRequestRepository.getOne(requestId);
+      User user = request.getUser();
       kieSession.insert(request);
-      //kieSession.fireAllRules();
+      kieSession.insert(user);
+      kieSession.insert(bankAccountRepository.getByUserId(user.getId()).get());
 
       QueryResults result = kieSession.getQueryResults("findFittingLoan", new Object[]{Variable.v});
 
@@ -37,5 +44,13 @@ public class LoanService {
 
       kieSession.dispose();
       return loansAvailable;
+   }
+
+   public LoanRequest createLoanRequest(LoanRequestDto request, User user) {
+      return this.loanRequestRepository.save(new LoanRequest(request, user));
+   }
+
+   public List<LoanRequest> getAll() {
+      return this.loanRequestRepository.findAll();
    }
 }
