@@ -2,13 +2,18 @@ package bank.service;
 
 import bank.repository.TransactionRepository;
 import facts.BankAccount;
+import facts.GeolocationResponse;
 import facts.Transaction;
+import facts.UserTransactions;
 import lombok.AllArgsConstructor;
 import org.kie.api.runtime.KieContainer;
+import org.kie.api.runtime.KieSession;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 @Service
 @AllArgsConstructor
@@ -16,6 +21,8 @@ public class TransactionService {
     private TransactionRepository transactionRepository;
     private BankAccountService bankAccountService;
     private KieContainer kieContainer;
+
+    private GeoLocationService geoLocationService;
 
     public List<Transaction> getAll() {
         return transactionRepository.findAll();
@@ -28,19 +35,52 @@ public class TransactionService {
     public Transaction processTransaction(Transaction transaction){
         if (!isTransactionValid(transaction))
             return null;
+
+        transaction.setTransactionTime(LocalDateTime.now());
+
         if(isTransactionsSuspicious(transaction)){
             transaction.setSuspicious(true);
             return transactionRepository.save(transaction);
         }
         transaction.setSuspicious(false);
         transferMoney(transaction.getAmount(), transaction.getSenderAccount(), transaction.getReceiverAccount());
-        transaction.setTransactionTime(LocalDateTime.now());
 
         return transactionRepository.save(transaction);
     }
 
     public boolean isTransactionsSuspicious(Transaction transaction){
-        return false;
+        KieSession kieSession = kieContainer.newKieSession();
+        UserTransactions userTransactions = new UserTransactions(transaction.getSenderAccount().getUser().getId());
+        userTransactions.setTransactionList(getAllSendersTransactions(userTransactions.getUserId()));
+
+        kieSession.insert(userTransactions);
+        kieSession.insert(transaction);
+        kieSession.getAgenda().getAgendaGroup("locationIndependent").setFocus();
+        kieSession.fireAllRules();
+        GeolocationResponse response = geoLocationService.getGeolocation(transaction.getLocation());
+        if (response != null) {
+            System.out.println("Latitude: " + response.getLatitude() + ", Longitude: " + response.getLongitude());
+            transaction.setLatitude(response.getLatitude());
+            transaction.setLongitude(response.getLongitude());
+            kieSession.getAgenda().getAgendaGroup("location").setFocus();
+            kieSession.fireAllRules();
+        } else {
+            System.out.println("Unable to retrieve geolocation.");
+        }
+
+        kieSession.dispose();
+        return transaction.isSuspicious();
+    }
+
+    public List<Transaction> getAllSendersTransactions(Long userId){
+        List<Transaction> transactions = getAll();
+        List<Transaction> transactionsSender = new ArrayList<Transaction>();
+        for (Transaction t: transactions) {
+            if (Objects.equals(t.getSenderAccount().getUser().getId(), userId))
+                if(!t.isSuspicious())
+                    transactionsSender.add(t);
+        }
+        return transactionsSender;
     }
 
     public boolean isTransactionValid(Transaction transaction){
