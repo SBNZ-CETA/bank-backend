@@ -27,7 +27,7 @@ rule "Suspisious if it is 7th within 3 hours"
 end
 
 rule "Suspisious if it is new location"
-    agenda-group "location"
+    agenda-group "locationNew"
     when
         $t: Transaction()
         $utz: UserTransactions()
