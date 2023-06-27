@@ -64,6 +64,8 @@ public class TransactionService {
             transaction.setLongitude(response.getLongitude());
             kieSession.getAgenda().getAgendaGroup("location").setFocus();
             kieSession.fireAllRules();
+            kieSession.getAgenda().getAgendaGroup("locationNew").setFocus();
+            kieSession.fireAllRules();
         } else {
             System.out.println("Unable to retrieve geolocation.");
         }
@@ -77,7 +79,7 @@ public class TransactionService {
         List<Transaction> transactionsSender = new ArrayList<Transaction>();
         for (Transaction t: transactions) {
             if (Objects.equals(t.getSenderAccount().getUser().getId(), userId))
-                if(!t.isSuspicious())
+                if(!t.isSuspicious() || t.isConfirmed())
                     transactionsSender.add(t);
         }
         return transactionsSender;
