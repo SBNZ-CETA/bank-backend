@@ -2,6 +2,7 @@ package bank.service;
 
 import bank.repository.BankAccountRepository;
 import dtos.NewBankAccountDto;
+import dtos.TransactionDto;
 import facts.BankAccount;
 import facts.User;
 import lombok.AllArgsConstructor;
@@ -27,6 +28,23 @@ public class BankAccountService {
 
    public BankAccount create(NewBankAccountDto accountDto, User user) {
       return accountRepository.save(generateNewAccount(user, accountDto));
+   }
+
+   public boolean validateCreditCardData(TransactionDto transactionDto) {
+      BankAccount senderAccount = getById(transactionDto.getSenderAccountId());
+      BankAccount receiverAccount = getById(transactionDto.getReceiverAccountId());
+      if (senderAccount == null && receiverAccount==null) {
+         return false;
+      }
+      Date expirationDate = new Date(senderAccount.getExpirationDate().getTime());
+      String fullName = senderAccount.getUser().getName() + " " + senderAccount.getUser().getSurname();
+      Date today = new Date();
+      if (!senderAccount.getCcv().equals(transactionDto.getCcv()) ||
+              !fullName.equals(transactionDto.getOwnerName()) || !transactionDto.getExpirationDate().equals(expirationDate) || today.after(expirationDate)) {
+         return false;
+      }
+
+      return true;
    }
 
    private BankAccount generateNewAccount(User user, NewBankAccountDto newAccount) {

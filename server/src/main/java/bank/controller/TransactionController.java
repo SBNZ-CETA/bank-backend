@@ -4,6 +4,7 @@ import bank.service.BankAccountService;
 import bank.service.TransactionService;
 import dtos.TransactionDto;
 import facts.Transaction;
+import io.netty.handler.codec.http.HttpResponseStatus;
 import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -29,6 +30,11 @@ public class TransactionController {
 
     @PostMapping("/process")
     public ResponseEntity<Transaction> createTransaction(@RequestBody TransactionDto transactionDto) {
+        if(transactionDto.isPayingFromBookstore()){
+            if (!bankAccountService.validateCreditCardData(transactionDto)) {
+                return ResponseEntity.badRequest().build();
+            }
+        }
         Transaction transaction = transactionService.processTransaction(getObjectFromDto(transactionDto));
         return transaction != null ? ResponseEntity.ok(transaction) : ResponseEntity.badRequest().build();
     }
