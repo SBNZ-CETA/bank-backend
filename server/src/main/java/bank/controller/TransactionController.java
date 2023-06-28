@@ -28,6 +28,12 @@ public class TransactionController {
         return ResponseEntity.ok(transactionService.getById(id));
     }
 
+    @GetMapping("/not-sus/{id}")
+    public ResponseEntity<Transaction> update(@PathVariable Long id) {
+        Transaction transaction = transactionService.getById(id);
+        return ResponseEntity.ok(transactionService.notSuspicious(transaction));
+    }
+
     @PostMapping("/process")
     public ResponseEntity<Transaction> createTransaction(@RequestBody TransactionDto transactionDto) {
         if(transactionDto.isPayingFromBookstore()){

@@ -102,5 +102,12 @@ public class TransactionService {
         bankAccountService.updateAccount(sender);
         bankAccountService.updateAccount(receiver);
     }
+
+    public Transaction notSuspicious(Transaction transaction){
+        transaction.setSuspicious(false);
+        transaction.setConfirmed(true);
+        transferMoney(transaction.getAmount(), transaction.getSenderAccount(), transaction.getReceiverAccount());
+        return transactionRepository.save(transaction);
+    }
 }
 
